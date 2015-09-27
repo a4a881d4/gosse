@@ -2,32 +2,27 @@ package sse
 
 /*
 #include<stdlib.h>
-#include<stdio.h>
-void *align_malloc( void** praw, int l, int a){
-	void *raw = malloc(l+a-1);
-	void *r = (void *)(((unsigned long)raw+a-1)&(unsigned long)(-a));
-	*praw = raw;
-	printf("raw=%p,align=%p\n",raw,r);
-	return r;
-}
+#include"align.h"
 */
 import "C"
 import "unsafe"
 import "reflect"
+import "runtime"
+import "fmt"
 
-type Cmplx32 struct {
+type cmplx32 struct {
 	r C.short
 	i C.short
 }
-type Cmplx32v struct {
-	v   []Cmplx32
+type cmplx32v struct {
+	v   []cmplx32
 	raw unsafe.Pointer
 }
 
-func NewCmplx32Vec(l int32) *Cmplx32v {
-	ret := &cmplx32v()
-	p, err := C.align_malloc(&ret.raw, l*4, 16)
-	runtime.SetFinalizer(ret, func(ret *complx32v) {
+func newCmplx32Vec(l int) *cmplx32v {
+	ret := &cmplx32v{}
+	p := C.align_malloc(&ret.raw, C.int(l*4), 16)
+	runtime.SetFinalizer(ret, func(ret *cmplx32v) {
 		fmt.Println("gc:", ret.raw)
 		C.free(ret.raw)
 	})
