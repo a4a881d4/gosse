@@ -1,6 +1,6 @@
 package cmplxv
 
-//import "math"
+import "math"
 import "math/cmplx"
 
 type ComplexV []complex128
@@ -102,4 +102,8 @@ func (self *ComplexV) Dot(b *ComplexV) complex128 {
 func (self *ComplexV) Power() float64 {
 	r := self.Dot(self)
 	return real(r)
+}
+func CosSin(l, f, a int) *ComplexV {
+	aSin := Arange(l).Mul(float64(f) / float64(l)).Cmul(complex(0., math.Pi*2)).Exp().Mul(float64(a))
+	return aSin
 }

@@ -8,6 +8,7 @@ import "C"
 import "unsafe"
 import "reflect"
 import "runtime"
+
 import "fmt"
 import "math"
 import "cmplxv"
@@ -26,6 +27,7 @@ func NewCmplx32Vec(l int) *Cmplx32v {
 	ret := &Cmplx32v{}
 	ret.d = C.align_malloc(&ret.raw, C.int(l*4), 16)
 	runtime.SetFinalizer(ret, func(ret *Cmplx32v) {
+		ret.v = make([]Cmplx32, 0)
 		fmt.Println("gc:", ret.raw)
 		C.free(ret.raw)
 	})

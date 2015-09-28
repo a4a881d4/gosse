@@ -21,3 +21,18 @@ func TestFFT2048(t *testing.T) {
 	fmt.Println((*rSin)[:5])
 	fmt.Println(math.Sqrt(rSin.Vsub(aSin.Mul(4096./128.)).Power() / 2048.))
 }
+
+func TestFFTEachFreq(t *testing.T) {
+	plan := NewFFT2048Plan()
+	for i := 0; i < 2048; i++ {
+		aSin := cmplxv.CosSin(2048, i, 63)
+		in := ToM128Buf(*aSin)
+		out := NewCmplx32Vec(2048)
+		plan.Do(in, out)
+		inx, max, avg := out.FindMax()
+		if inx != i {
+			t.Error(i, inx, max, avg)
+			t.Fail()
+		}
+	}
+}
