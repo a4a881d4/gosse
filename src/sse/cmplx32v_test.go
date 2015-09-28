@@ -13,9 +13,9 @@ func TestNewCmplx32Vec(t *testing.T) {
 }
 
 func TestToBuf(t *testing.T) {
-	var a complex64 = 1. - 1.i
-	var z complex64 = 0.
-	data := make([]complex64, 128)
+	var a complex128 = 1. - 1.i
+	var z complex128 = 0.
+	data := make([]complex128, 128)
 	for k, _ := range data {
 		data[k] = z
 		z = z + a

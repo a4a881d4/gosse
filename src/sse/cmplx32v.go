@@ -10,6 +10,7 @@ import "reflect"
 import "runtime"
 import "fmt"
 import "math"
+import "cmplxv"
 
 type Cmplx32 struct {
 	r C.short
@@ -75,4 +76,9 @@ func ToM128Buf(d []complex128) *Cmplx32v {
 		r.v[k] = ToCmplx32(x)
 	}
 	return r
+}
+
+func (buf *Cmplx32v) FromBuf() *cmplxv.ComplexV {
+	var r cmplxv.ComplexV = cmplxv.ComplexV(buf.ToComplex())
+	return &r
 }
