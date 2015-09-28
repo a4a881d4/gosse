@@ -11,3 +11,17 @@ func TestNewCmplx32Vec(t *testing.T) {
 	fmt.Println(unsafe.Pointer(&tut.v[127]))
 	fmt.Println(tut.Get())
 }
+
+func TestToBuf(t *testing.T) {
+	var a complex64 = 1. - 1.i
+	var z complex64 = 0.
+	data := make([]complex64, 128)
+	for k, _ := range data {
+		data[k] = z
+		z = z + a
+	}
+	buf := ToM128Buf(data)
+	fmt.Println(buf.v)
+	r := buf.ToComplex()
+	fmt.Println(r)
+}
