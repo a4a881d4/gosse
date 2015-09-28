@@ -24,4 +24,7 @@ func TestToBuf(t *testing.T) {
 	fmt.Println(buf.v)
 	r := buf.ToComplex()
 	fmt.Println(r)
+	if buf.xcorr(buf, 0) != 1.38176e6+0i {
+		t.FailNow()
+	}
 }

@@ -9,6 +9,7 @@ import "unsafe"
 import "reflect"
 import "runtime"
 import "fmt"
+import "math"
 
 type Cmplx32 struct {
 	r C.short
@@ -38,24 +39,40 @@ func (self *Cmplx32v) Get() unsafe.Pointer {
 	return self.d
 }
 
-func (self *Cmplx32) ToComplex() complex64 {
-	var r complex64 = complex(float32(self.r), float32(self.i))
+func (self *Cmplx32) ToComplex() complex128 {
+	var r complex128 = complex(float64(self.r), float64(self.i))
 	return r
 }
 
-func (self *Cmplx32v) ToComplex() []complex64 {
-	r := make([]complex64, len(self.v))
+func (self *Cmplx32v) ToComplex() []complex128 {
+	r := make([]complex128, len(self.v))
 	for k, x := range self.v {
 		r[k] = x.ToComplex()
 	}
 	return r
 }
 
-func ToM128Buf(d []complex64) *Cmplx32v {
+func double2Short(y float64) C.short {
+	d := math.Floor(0.5 + y)
+	if d > 32767.0 {
+		return 32767
+	}
+	if d < -32768.0 {
+		return -32768
+	}
+	return C.short(d)
+}
+
+func ToCmplx32(x complex128) Cmplx32 {
+	var r Cmplx32
+	r.r = double2Short(real(x))
+	r.i = double2Short(imag(x))
+	return r
+}
+func ToM128Buf(d []complex128) *Cmplx32v {
 	r := NewCmplx32Vec(len(d))
 	for k, x := range d {
-		r.v[k].r = C.short(real(x))
-		r.v[k].i = C.short(imag(x))
+		r.v[k] = ToCmplx32(x)
 	}
 	return r
 }
