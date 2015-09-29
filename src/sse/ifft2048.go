@@ -173,9 +173,9 @@ type IFFT2048Plan struct {
 
 func NewIFFT2048Plan() *IFFT2048Plan {
 	r := &IFFT2048Plan{}
-	r.r2048twiddle = NewCmplx32Vec(2048)
-	r.r32twiddle = NewCmplx32Vec(32 * 4)
-	r.r64twiddle = NewCmplx32Vec(64 * 4)
+	r.r2048twiddle = NewCmplx32Vec(2048 * 2)
+	r.r32twiddle = NewCmplx32Vec(32 * 2 * 4)
+	r.r64twiddle = NewCmplx32Vec(64 * 2 * 4)
 	C.init_ifft2048_twiddle_factor((*C.WORD16)(r.r2048twiddle.d), (*C.WORD16)(r.r32twiddle.d), (*C.WORD16)(r.r64twiddle.d))
 	return r
 }

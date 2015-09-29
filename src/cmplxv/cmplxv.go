@@ -107,3 +107,15 @@ func CosSin(l, f, a int) *ComplexV {
 	aSin := Arange(l).Mul(float64(f) / float64(l)).Cmul(complex(0., math.Pi*2)).Exp().Mul(float64(a))
 	return aSin
 }
+func (self *ComplexV) FindMax() (inx int, a float64) {
+	a = 0.
+	inx = 0
+	for k, x := range *self {
+		p := x * cmplx.Conj(x)
+		if real(p) > a {
+			a = real(p)
+			inx = k
+		}
+	}
+	return inx, a
+}
