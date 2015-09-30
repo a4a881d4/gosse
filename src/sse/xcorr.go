@@ -56,12 +56,12 @@ void xcorr( void *ina, void *inb, int shift, int l, int *out )
 */
 import "C"
 
-func (self *Cmplx32v) xcorr(in *Cmplx32v, shift int) complex64 {
+func (self *Cmplx32v) xcorr(in *Cmplx32v, shift int) complex128 {
 	l := len(self.v)
 	var ret [2]C.int
 	if shift+l > len(in.v) {
 		l = len(in.v) - shift
 	}
 	C.xcorr(in.d, self.d, C.int(shift), C.int(l), &ret[0])
-	return complex(float32(ret[0]), float32(ret[1]))
+	return complex(float64(ret[0]), float64(ret[1]))
 }

@@ -2,6 +2,7 @@ package cmplxv
 
 import "math"
 import "math/cmplx"
+import "math/rand"
 
 type ComplexV []complex128
 
@@ -118,4 +119,11 @@ func (self *ComplexV) FindMax() (inx int, a float64) {
 		}
 	}
 	return inx, a
+}
+func Noise(l int) *ComplexV {
+	r := Zeros(l)
+	for k, _ := range *r {
+		(*r)[k] = complex(rand.NormFloat64(), rand.NormFloat64())
+	}
+	return r
 }

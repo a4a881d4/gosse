@@ -6,34 +6,33 @@ import "math"
 import "testing"
 import "cmplxv"
 
-//import "fmt"
+import "fmt"
 
 func TestFFT2048(t *testing.T) {
-	k := 1024
-	aSin := cmplxv.Arange(2048).Mul(float64(-k) / 2048.).Cmul(complex(0., math.Pi*2)).Exp().Mul(64.)
-	in := ToM128Buf(*aSin)
 	fplan := NewFreqCorrectPlan()
 	plan := NewFFT2048Plan()
 	iplan := NewIFFT2048Plan()
 	fSin := NewCmplx32Vec(2048)
 	ifSin := NewCmplx32Vec(2048)
 
-	for i := k; i < k+128; i++ {
-		iplan.Do(in, fSin)
-		//fmt.Println("fSin", fSin.v[:5])
-		fplan.DoA(fSin, fSin, 0, 0, 1024)
-		//fmt.Println("fSin", fSin.v[:5])
-		plan.Do(fSin, ifSin)
+	for i := 0; i < 128; i++ {
+		aSin := cmplxv.Noise(2048).Mul(128.)
+		in := ToM128Buf(*aSin)
+		plan.Do(in, fSin)
+		fmt.Println("fSin", fSin.v[:5])
+		fplan.DoA(fSin, fSin, 0, 0, 8192)
+		fmt.Println("fSin", fSin.v[:5])
+		iplan.Do(fSin, ifSin)
 		rSin := ifSin.FromBuf()
-		err := rSin.Vsub(in.FromBuf().Mul(1.))
-		fplan.Do(in, in, 0, 4*65536)
+		x := ifSin.xcorr(in, 0) / in.xcorr(in, 0)
+		fmt.Println("x=", x)
+		err := rSin.Vsub(in.FromBuf().Cmul(x))
+		//fplan.Do(in, in, 0, 4*65536)
 		avg := math.Sqrt(err.Power() / 2048.)
-		if avg > 16. {
+		if avg > 4. {
 			inx, peak := err.FindMax()
-			finx, fpeak, _ := fSin.FindMax()
-			t.Error(i, finx, fpeak, inx, peak, (*err)[inx], in.v[inx], fSin.v[i], ifSin.v[inx], avg)
+			t.Error(i, inx, peak, (*err)[inx], in.v[inx], ifSin.v[inx], avg)
 			t.Error(in.v[:5], ifSin.v[:5])
-
 		}
 	}
 }
