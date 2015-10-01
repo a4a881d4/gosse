@@ -30,13 +30,13 @@ func (self *clockConv) getSysNow() float64 {
 type clockConv struct {
 	s     float64
 	a     float64
-	stop  bool
-	cnt   int
+	Stop  bool
+	Cnt   int
 	start int64
 }
 
 func NewClock() *clockConv {
-	r := &clockConv{start: time.Now().UnixNano(), stop: false}
+	r := &clockConv{start: time.Now().UnixNano(), Stop: false}
 	return r
 }
 func (self *clockConv) Now() float64 {
@@ -68,14 +68,14 @@ func (c *clockConv) init(n int) {
 	c.s = 1. / det * (x[1][1]*y[0] - x[1][0]*y[1])
 	c.a = 1. / det * (-x[0][1]*y[0] + x[0][0]*y[1])
 }
-func routine(c *clockConv) {
-	c.init(1000)
+func Routine(c *clockConv) {
+	c.init(20000)
 	sumerr := 0.
-	for c.cnt = 0; !c.stop; c.cnt++ {
+	for c.Cnt = 0; !c.Stop; c.Cnt++ {
 		err := c.Now() - c.getSysNow()
 		sumerr += err
-		c.s -= sumerr*0.2 + err*0.5
-		c.a -= err*1e-17 + sumerr*3e-18
+		c.s -= sumerr*0.05 + err*0.1
+		c.a -= err*1e-18 + sumerr*5e-19
 		fmt.Println(err, c.a, c.s, sumerr)
 		time.Sleep(time.Millisecond * 100)
 	}
