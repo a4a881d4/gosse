@@ -33,8 +33,12 @@ type GMem struct {
 	length uint64
 }
 
-func (r *VMem) start() {
+func (r *VMem) Start() {
 	r.head._brk = 0
+	C.resetVMem(r.head)
+}
+
+func (r *VMem) ReStart() {
 	C.resetVMem(r.head)
 }
 
