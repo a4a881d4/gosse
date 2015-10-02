@@ -43,19 +43,26 @@ type clockConv struct {
 	xs    [2]float64
 	cpu_s int64
 	sys_s int64
+	lunch int64
 }
 
 func NewClock() *clockConv {
-	r := &clockConv{start: time.Now().UnixNano(), Stop: false, alf: 0.5}
+	r := &clockConv{lunch: time.Now().UnixNano(), Stop: false, alf: 0.5}
 	r.y, r.xy = 0., 0.
 	r.x, r.xx = 0., 0.
 	r.off = 0
 	r.ss = 1000000
 	r.xs[0], r.xs[1] = 0., 0.
+	r.start = r.lunch
 	return r
 }
 func (self *clockConv) Now() float64 {
 	return (self.s + self.a*float64(self.getNow()) + float64(self.start))
+}
+func (c *clockConv) Run() (r, s int64) {
+	r = int64(c.s + c.a*float64(c.getNow()))
+	r += (c.start - c.lunch)
+	return r, c.lunch
 }
 func (c *clockConv) scale(sys float64) {
 	o := sys / c.a
@@ -109,13 +116,13 @@ func (c *clockConv) calc() {
 func (c *clockConv) loop(e float64) {
 	c.xs[0] += e
 	c.xs[1] += c.xs[0]
-	c.s -= 1. * (e*0.5 + c.xs[0]*0.2 + c.xs[1]*0.01)
+	c.s -= 1. * (e*0.3 + c.xs[0]*0.1 + c.xs[1]*0.01)
 	//c.a -= 1.e-16 * (e*5. + c.xs[0]*2. + c.xs[1]*0.5)
 }
 func (c *clockConv) recalc() {
 	cpu_n := int64(C.__getNow())
 	sys_n := time.Now().UnixNano()
-	fmt.Println("re calc", sys_n-c.sys_s)
+	//fmt.Println("re calc", sys_n-c.sys_s)
 	c.a = float64(sys_n-c.sys_s) / float64(cpu_n-c.cpu_s)
 	c.s = 0.
 	c.xs[0], c.xs[1] = 0., 0.
@@ -126,11 +133,12 @@ func (c *clockConv) recalc() {
 }
 func Routine(c *clockConv) {
 	c.init(1000)
+	fmt.Println("time routine start!!!")
 	for c.Cnt = 1; !c.Stop; c.Cnt++ {
 		err := c.update()
 		c.loop(err)
 		if c.Cnt%10 == 0 {
-			fmt.Printf("%8.1f %16.10e %16.10e %16.10e %16.10e\n", err, c.a, c.s, c.xs[0], c.xs[1])
+			//fmt.Printf("%8.1f %16.10e %16.10e %16.10e %16.10e\n", err, c.a, c.s, c.xs[0], c.xs[1])
 		}
 		if c.Cnt%1000 == 0 {
 			c.recalc()
