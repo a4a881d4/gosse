@@ -269,10 +269,10 @@ func findByKey(key string) string {
 	}
 	return ""
 }
-func (self *CPBuffer) getBuf(uint64 off, uint64 l) (unsafe.Pointer, error) {
+func (self *CPBuffer) getBuf(off, l uint64) (unsafe.Pointer, error) {
 	ioff := off % self.Size
 	if ioff+l > self.Size+self.Res {
 		return unsafe.Pointer(nil), errors.New("large than CP")
 	}
-	return self.pStart + ioff, nil
+	return unsafe.Pointer(uintptr(self.pStart) + uintptr(ioff)), nil
 }

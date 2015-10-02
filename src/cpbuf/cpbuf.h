@@ -14,8 +14,18 @@ typedef struct CPBMeta {
   char key[16];
 } CPBMeta;
 typedef struct {
-	CPMeta meta;
-    raw_spinlock_t lockM;
-    int64 _brk;
+	CPBMeta meta;
+  raw_spinlock_t lockM;
+  int64 _brk;
 } VMemHead;
+typedef struct {
+  CPBMeta meta;
+  raw_spinlock_t lock;
+  char buf[256];
+} TimingBufHead;
+
+typedef struct {
+  CPBMeta meta;
+  char buf[256];
+} GBufHead;
 

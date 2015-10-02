@@ -69,13 +69,13 @@ func (r *VMem) alloc(l uint64) (unsafe.Pointer, error) {
 }
 
 func (r *VMem) allocAlign(l uint64, a int) (unsafe.Pointer, error) {
-	p := C.allocMemAlign(r.head, c.int64(l), c.int64(a))
+	p := C.allocMemAlign(r.head, C.int64(l), C.int(a))
 	return r.mem.getBuf(uint64(p), l)
 }
 
 func (r *VMem) allocGMemAlign(l uint64, a int) *GMem {
 	gm := &GMem{key: r.key}
-	gm.off = uint64(C.allocMemAlign(r.head, c.int64(l), c.int64(a)))
+	gm.off = uint64(C.allocMemAlign(r.head, C.int64(l), C.int(a)))
 	gm.length = l
 	return gm
 }
