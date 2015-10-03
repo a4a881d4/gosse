@@ -211,15 +211,17 @@ func (self *CPBuffer) checkMeta(mode int) bool {
 	return true
 }
 
-func getMetaMd5(b []byte) []byte {
+func getMd5(b []byte) []byte {
 	m := md5.New()
-	m.Write(b[:256-16])
+	m.Write(b)
 	c := m.Sum(nil)
 	return c
 }
-
+func getKey(b []byte) string {
+	return hex.EncodeToString(getMd5(b))
+}
 func checkMetaMd5(b []byte) bool {
-	md5 := getMetaMd5(b)
+	md5 := getMd5(b[:256-16])
 	return bytes.Equal(b[256-16:256], md5)
 }
 func ListDir(dirPth string) (files []string, err error) {

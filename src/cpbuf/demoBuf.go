@@ -1,7 +1,10 @@
 package cpbuf
 
-import "unsafe"
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+	"unsafe"
+)
 
 type beShared struct {
 	a, b, c int
