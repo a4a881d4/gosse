@@ -13,33 +13,27 @@ func (r beShared) setA(k int) {
 }
 
 type demoBuf struct {
-	buf *GBuf
-	my  SharedObj
+	GBuf
+	my SharedObj
 }
 
 func NewDemoBuf(m *CPBuffer) *demoBuf {
 	r := &demoBuf{}
-	r.buf = NewGBuf(m)
-	return r
-}
-
-func DemoBufFromFile(name string) *demoBuf {
-	r := &demoBuf{}
-	r.buf = GBufFromFile(name)
+	r.New(m)
 	return r
 }
 
 func (r *demoBuf) Attach() {
-	var us unsafe.Pointer
 	var b *beShared
-	us, r.my.lock, r.my.unlock = r.buf.Attach(unsafe.Sizeof(*b))
-	r.my.Obj = *((*beShared)(us))
+	r.my = r.GBuf.Attach(unsafe.Sizeof(*b))
+	r.my.Obj = (*beShared)(r.my.Obj.(unsafe.Pointer))
 }
 
 func (r *demoBuf) Dump() {
-	fmt.Println(r.my.Obj.(timing))
+	var p *beShared = r.my.Obj.(*beShared)
+	fmt.Println(*p)
 }
 
 func (r *demoBuf) SetA(l int) {
-	//r.my.Obj.(timing).a = l
+	//r.my.Obj.(beShared).a = l
 }

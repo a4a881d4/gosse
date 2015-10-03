@@ -12,12 +12,30 @@ type timing struct {
 func TestAttach(t *testing.T) {
 	r := NewCPBuffer(307200, 4096, 4096, "tx.d")
 	p := NewGBuf(r)
-	var s *timing
-	us, slock, sunlock := p.Attach(unsafe.Sizeof(*s))
-	s = (*timing)(us)
-	sunlock()
-	slock()
+	fmt.Println(p)
+	s := &timing{}
+	obj := p.Attach(unsafe.Sizeof(*s))
+	fmt.Println(obj)
+	obj.lock()
+	s = (*timing)(obj.Obj.(unsafe.Pointer))
 	s.a = 1
-	sunlock()
+	obj.unlock()
 	fmt.Println(s)
+}
+func TestDemo(t *testing.T) {
+	r := NewCPBuffer(307200, 4096, 4096, "tx.d")
+	one := demoBuf{}
+	one.New(r)
+	one.Attach()
+	another := demoBuf{}
+	another.FromFile("tx.d")
+	(&another).Attach()
+	one.Dump()
+	var o *beShared = (another.my.Obj.(*beShared))
+
+	fmt.Println(o.b)
+	another.my.lock()
+	o.b = 2
+	another.my.unlock()
+	one.Dump()
 }
